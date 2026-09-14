@@ -4,9 +4,13 @@ const app = express();
 const tourRouter = require("./routes/tourRouter");
 const userRouter = require("./routes/userRouter");
 const { unknownEndpoint } = require("./middleware/customMiddleware");
+const connectDB = require("./config/db");
+
 
 const morgan = require("morgan");
 app.use(morgan("dev"));
+connectDB();
+  
 
 // Middleware to parse JSON
 app.use(express.json());

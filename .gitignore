@@ -1,3 +1,5 @@
 node_modules/
 .env
 AI/
+node_modules/
+.env

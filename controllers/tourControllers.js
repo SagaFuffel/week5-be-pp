@@ -1,67 +1,101 @@
-const Tour = require("../models/tourModel");
-
+import Tour from "../models/tourModel.js"
 // GET /tours
-const getAllTours = (req, res) => {
-  const tours = Tour.getAll();
-  res.json(tours);
+const getAllTours = async (req, res) => {
+  try {
+    const tours = await Tour.find({});
+    res.json(tours);
+  }
+  catch (error) {
+    res.status(500).json({message: "Could not create.", error: error.message})
+  }
 };
 
 // POST /tours
-const createTour = (req, res) => {
-  const newTour = Tour.addOne({ ...req.body }); // Spread the req.body object
+const createTour = async (req, res) => {
+  const newTour = await Tour.create({ ...req.body }); // Spread the req.body object
 
-  if (newTour) {
-    res.status(201).json(newTour); // 201 Created
-  } else {
-    // Handle error (e.g., failed to create tour)
-    res.status(400).json({ message: "Invalid tour data. Ensure all fields are provided, including 'season' and 'specialOffer'." });
+  try {
+    if (newTour) {
+      res.status(201).json(newTour); // 201 Created
+    } else {
+      // Handle error (e.g., failed to create tour)
+      res.status(400).json({ message: "Invalid tour data. Ensure all fields are provided, including 'season' and 'specialOffer'." });
+    }
   }
+
+  catch (error) {
+    res.status(500).json({message: "Could not create.", error: error.message})
+  }
+  
 };
  
 // GET /tours/:tourId
-const getTourById = (req, res) => {
+const getTourById = async (req, res) => {
   const tourId = req.params.tourId;
-  const tour = Tour.findById(tourId);
-  if (tour) {
-    res.json(tour);
-  } else {
-    res.status(404).json({ message: "Tour not found" });
+  const tour = await Tour.findById(tourId);
+  if (!mongoose.Types.ObjectId.isValid(tourId)) {
+
+    return res.status(400).json({ message: "Invalid ID" });
+
+  }
+  try {
+    if (tour) {
+      res.json(tour);
+    } else {
+      res.status(404).json({ message: "Tour not found" });
+    }
+  } catch (error) {
+    res.status(500).json({message: "Could not find by id.", error: error.message})
   }
 };
 
 // PUT /tours/:tourId
-const updateTour = (req, res) => {
+const updateTour = async (req, res) => {
   const tourId = req.params.tourId;
-  if (isNaN(tourId)) {
-    return res.status(400).json({ message: "Invalid tour ID" });
-  }
-  const updatedTour = Tour.updateOneById(tourId, { ...req.body }); // Spread the req.body object
+  if (!mongoose.Types.ObjectId.isValid(tourId)) {
 
-  if (updatedTour) {
-    res.json(updatedTour);
-  } else {
-    // Handle update failure (e.g., tour not found)
-    res.status(404).json({ message: "Tour not found" });
+    return res.status(400).json({ message: "Invalid ID" });
+
   }
+  const updatedTour = await Tour.findBYIdAndUpdate(tourId, { ...req.body }); // Spread the req.body object
+  try {
+    if (updatedTour) {
+    res.json(updatedTour);
+    } else {
+      // Handle update failure (e.g., tour not found)
+      res.status(404).json({ message: "Tour not found" });
+    }
+  } catch (error) {
+    res.status(500).json({message: "Could not find by id and update.", error: error.message})
+  }
+
 };
 
 // DELETE /tours/:tourId
-const deleteTour = (req, res) => {
+const deleteTour = async (req, res) => {
   const tourId = req.params.tourId;
-  if (isNaN(tourId)) {
-    return res.status(400).json({ message: "Invalid tour ID" });
-  }
-  const isDeleted = Tour.deleteOneById(tourId);
+  if (!mongoose.Types.ObjectId.isValid(tourId)) {
 
-  if (isDeleted) {
-    res.status(204).send(); // 204 No Content
-  } else {
-    // Handle deletion failure (e.g., tour not found)
-    res.status(404).json({ message: "Tour not found" });
+    return res.status(400).json({ message: "Invalid ID" });
+
   }
+
+  const isDeleted = await Tour.findByIdAndDelete(tourId);
+
+  try {
+    if (isDeleted) {
+    res.status(204).send(); // 204 No Content
+    } else {
+      // Handle deletion failure (e.g., tour not found)
+      res.status(404).json({ message: "Tour not found" });
+    }
+  } catch (error) {
+    res.status(500).json({message: "Could not find by id and delete.", error: error.message})
+  }
+  
 };
 
-module.exports = {
+export {
   getAllTours,
   getTourById,
   createTour,
