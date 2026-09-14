@@ -25,6 +25,8 @@ app.get('/', (req, res) => {
   next(error);
 });*/
 
+// we did the iteration 6
+
 // Use the tourRouter for all "/tours" routes
 app.use("/api/tours", tourRouter);
 
