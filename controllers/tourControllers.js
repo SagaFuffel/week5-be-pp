@@ -1,4 +1,6 @@
-import Tour from "../models/tourModel.js"
+const Tour = require("../models/tourModel");
+const mongoose = require("mongoose");
+
 // GET /tours
 const getAllTours = async (req, res) => {
   try {
@@ -95,7 +97,7 @@ const deleteTour = async (req, res) => {
   
 };
 
-export {
+module.exports = {
   getAllTours,
   getTourById,
   createTour,
