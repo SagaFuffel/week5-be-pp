@@ -15,7 +15,6 @@ app.get('/', (req, res) => {
   res.send('API is running');
 });
 
-
 // Use the tourRouter for all "/tours" routes
 app.use("/api/tours", tourRouter);
 
