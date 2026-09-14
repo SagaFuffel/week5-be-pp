@@ -3,9 +3,8 @@ const express = require("express");
 const app = express();
 const tourRouter = require("./routes/tourRouter");
 const userRouter = require("./routes/userRouter");
-const { unknownEndpoint } = require("./middleware/customMiddleware");
+const { unknownEndpoint, errorHandler } = require("./middleware/customMiddleware");
 const connectDB = require("./config/db");
-
 
 const morgan = require("morgan");
 app.use(morgan("dev"));
@@ -19,6 +18,13 @@ app.get('/', (req, res) => {
   res.send('API is running');
 });
 
+//hide app.get ^
+// Example route that throws an error (for testing purposes only)
+/*app.get('/error', (req, res, next) => {
+  const error = new Error("Network problem");
+  next(error);
+});*/
+
 // Use the tourRouter for all "/tours" routes
 app.use("/api/tours", tourRouter);
 
@@ -26,7 +32,8 @@ app.use("/api/tours", tourRouter);
 app.use("/api/users", userRouter);
 
 app.use(unknownEndpoint);
-// app.use(errorHandler);
+app.use(errorHandler);
+
 
 const port = process.env.PORT || 4000;
 // Start the server
