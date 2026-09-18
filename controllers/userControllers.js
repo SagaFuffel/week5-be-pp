@@ -1,14 +1,15 @@
 const User = require("../models/userModel");
-const moongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 // GET /users
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({});
     res.json(users);
-  }
-  catch (error) {
-    res.status(500).json({message: "Could not create.", error: error.message})
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Could not create.", error: error.message });
   }
 };
 
@@ -21,25 +22,28 @@ const createUser = async (req, res) => {
       res.status(201).json(newUser); // 201 Created
     } else {
       // Handle error (e.g., failed to create user)
-      res.status(400).json({ message: "Invalid user data. Ensure all fields are provided, including 'season' and 'specialOffer'." });
+      res
+        .status(400)
+        .json({
+          message:
+            "Invalid user data. Ensure all fields are provided, including 'season' and 'specialOffer'.",
+        });
     }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Could not create.", error: error.message });
   }
-
-  catch (error) {
-    res.status(500).json({message: "Could not create.", error: error.message})
-  }
-  
 };
- 
+
 // GET /users/:userId
 const getUserById = async (req, res) => {
   const userId = req.params.userId;
-  const user = await User.findById(userId);
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
-
     return res.status(400).json({ message: "Invalid ID" });
   }
+  const user = await User.findById(userId);
 
   try {
     if (user) {
@@ -48,7 +52,9 @@ const getUserById = async (req, res) => {
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    res.status(500).json({message: "Could not find by id.", error: error.message})
+    res
+      .status(500)
+      .json({ message: "Could not find by id.", error: error.message });
   }
 };
 
@@ -58,22 +64,25 @@ const updateUser = async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "Invalid ID" });
-
   }
 
-  const updatedUser = await User.findBYIdAndUpdate(userId, { ...req.body }); // Spread the req.body object
+  const updatedUser = await User.findByIdAndUpdate(userId, { ...req.body }); // Spread the req.body object
 
   try {
     if (updatedUser) {
-    res.json(updatedUser);
+      res.json(updatedUser);
     } else {
       // Handle update failure (e.g., user not found)
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    res.status(500).json({message: "Could not find by id and update.", error: error.message})
+    res
+      .status(500)
+      .json({
+        message: "Could not find by id and update.",
+        error: error.message,
+      });
   }
-
 };
 
 // DELETE /users/:userId
@@ -88,15 +97,19 @@ const deleteUser = async (req, res) => {
 
   try {
     if (isDeleted) {
-    res.status(204).send(); // 204 No Content
+      res.status(204).send(); // 204 No Content
     } else {
       // Handle deletion failure (e.g., user not found)
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    res.status(500).json({message: "Could not find by id and delete.", error: error.message})
+    res
+      .status(500)
+      .json({
+        message: "Could not find by id and delete.",
+        error: error.message,
+      });
   }
-  
 };
 
 module.exports = {
